@@ -3,50 +3,105 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Contact BOD & Activity Roadmap</title>
+  <title>Contact BOD & Roadmap</title>
   
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0ea5e9">
+  <meta name="theme-color" content="#1e293b">
 
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Contact BOD">
-  
   <link rel="apple-touch-icon" href="icon-512.png">
-  <link rel="apple-touch-icon" sizes="152x152" href="icon-192.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="icon-192.png">
 
   <style>
     html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
       overflow: hidden;
-      background-color: #1e293b; 
+      background-color: #1e293b; /* สีพื้นหลังหลักของแอป */
     }
+
+    /* 🎨 สไตล์หน้า Splash Screen */
+    #splash-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: #1e293b;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999; /* อยู่บนสุด */
+      transition: opacity 0.5s ease-out, visibility 0.5s;
+    }
+
+    /* สไตล์รูปโลโก้กลางจอ */
+    .splash-logo {
+      width: 120px;
+      height: 120px;
+      border-radius: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      margin-bottom: 20px;
+      animation: pulse-animation 2s infinite ease-in-out;
+    }
+
+    /* ข้อความโหลด */
+    .loading-text {
+      color: #3b82f6;
+      font-family: sans-serif;
+      font-size: 14px;
+      letter-spacing: 2px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    /* แอนิเมชันโลโก้เต้นเบาๆ */
+    @keyframes pulse-animation {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    /* เมื่อโหลดเสร็จจะซ่อนหน้านี้ */
+    .fade-out {
+      opacity: 0;
+      visibility: hidden;
+    }
+
     iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: block;
+      width: 100%; height: 100%;
+      border: none; display: block;
     }
   </style>
 </head>
 <body>
 
+  <div id="splash-screen">
+    <img src="icon-512.png" alt="Logo" class="splash-logo">
+    <div class="loading-text">CPE BOD LOADING...</div>
+  </div>
+
   <iframe 
+    id="app-frame"
     src="https://script.google.com/macros/s/AKfycbzLZan5F-XH_K7k7430G4G6Mek0XRuga-r_3MKgiq4oIaxN_xj2dMnFjaz8hcUXv8Nb/exec" 
     sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-modals allow-popups-to-escape-to-sandbox">
   </iframe>
 
   <script>
-    // ⚙️ สคริปต์ลงทะเบียน Service Worker เพื่อให้ระบบบราวเซอร์ยอมรับว่าเป็นแอปที่ติดตั้งลงเครื่องได้
+    // ⚙️ ตรวจจับเมื่อ iframe (แอป Google Script) โหลดเนื้อหาเสร็จ
+    const iframe = document.getElementById('app-frame');
+    const splash = document.getElementById('splash-screen');
+
+    iframe.onload = function() {
+      // สั่งให้ Splash Screen จางหายไป
+      splash.classList.add('fade-out');
+      console.log('App is ready!');
+    };
+
+    // ลงทะเบียน Service Worker สำหรับ PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('data:text/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCdmZXRjaCcsIGU9PntlLnJlc3BvbmRXaXRoKGZldGNoKGUucmVxdWVzdCkpO30pOw==', { scope: './' })
-          .then(reg => console.log('PWA Ready.'))
-          .catch(err => console.log('PWA Failed.', err));
+        navigator.serviceWorker.register('data:text/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCdmZXRjaCcsIGU9PntlLnJlc3BvbmRXaXRoKGZldGNoKGUucmVxdWVzdCkpO30pOw==', { scope: './' });
       });
     }
   </script>
